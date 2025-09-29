@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Walkthroughs — Alex Mark</title>
+  <style>
+    :root{
+      --bg:#0a0f1c;
+      --panel:#0f1724;
+      --muted:#9ca3af;
+      --accent:#3b82f6;
+      --glass: rgba(255,255,255,0.03);
+      --card-shadow: 0 6px 20px rgba(11,15,28,0.6);
+      --radius:12px;
+      --max-width:1200px;
+      --glass-2: rgba(255,255,255,0.02);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg),#061024 120%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding-bottom: 80px;
+    }
+    a{color:var(--accent); text-decoration:none}
+    header{
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(10,15,28,0.6), rgba(15,20,28,0.6));
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      position:sticky; top:0; z-index:1200;
+    }
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:22px;
+    }
+    /* top bar */
+    .topbar{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .brand .logo{
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      background:linear-gradient(135deg,var(--accent), #1e40af);
+      display:grid; place-items:center; font-weight:700;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+    }
+    .brand h1{
+      font-size:18px; margin:0; letter-spacing:0.2px;
+    }
+    .brand p{margin:0; color:var(--muted); font-size:12px}
+    nav.top-actions{display:flex; gap:10px; align-items:center}
+    .btn {
+      border:1px solid rgba(255,255,255,0.06);
+      background:var(--glass);
+      color:var(--accent);
+      padding:8px 12px;
+      border-radius:8px;
+      font-weight:600;
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn.secondary { background:transparent; color:#cfe6ff; border:1px solid rgba(255,255,255,0.03) }
+    .btn:hover{ transform: translateY(-3px) }
+    .controls {
+      display:flex;
+      gap:12px;
+      margin-top:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    /* search & filters */
+    .search {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:var(--panel);
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .search input{
+      background:transparent; border:0; outline:0; color:inherit; width:320px; font-size:14px;
+    }
+    .select, .sort {
+      background:var(--panel);
+      border-radius:10px;
+      padding:8px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .tags-pills{display:flex; gap:8px; flex-wrap:wrap;}
+    .tag-pill{
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--glass-2);
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,0.02);
+      cursor:pointer; font-size:13px;
+    }
+    .tag-pill.active{ background:linear-gradient(90deg,var(--accent), #1e40af); color:white; box-shadow: 0 6px 18px rgba(59,130,246,0.12)}
+    /* layout */
+    .main{
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      gap:28px;
+      margin-top:22px;
+    }
+    @media (max-width:980px){ .main{ grid-template-columns: 1fr; } .sidebar { order:2 } }
+
+    /* cards */
+    .cards{ display:grid; gap:18px; grid-template-columns: repeat(2, 1fr) }
+    @media (max-width:980px){ .cards{ grid-template-columns: 1fr } }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding:16px;
+      box-shadow: var(--card-shadow);
+      border:1px solid rgba(255,255,255,0.03);
+      transition: transform .18s ease, box-shadow .18s ease;
+      display:flex;
+      gap:12px;
+    }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 18px 36px rgba(2,6,23,0.6) }
+    .card .image{
+      min-width:110px; width:110px; height:76px; border-radius:8px; background:#071026; display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-size:12px; border:1px dashed rgba(255,255,255,0.02);
+    }
+    .card .meta{
+      flex:1; display:flex; flex-direction:column; gap:8px;
+    }
+    .card h3{margin:0; font-size:16px}
+    .card .meta p{margin:0; color:var(--muted); font-size:13px}
+    .card .row{display:flex; gap:8px; align-items:center; justify-content:space-between}
+    .card .tags{display:flex; gap:8px; flex-wrap:wrap}
+    .chip{padding:6px 8px; background:var(--glass-2); border-radius:8px; font-size:12px; color:var(--muted)}
+    .difficulty{ font-weight:700; letter-spacing:0.4px; font-size:12px }
+
+    /* sidebar */
+    .sidebar{
+      position:relative;
+      top:0;
+      align-self:start;
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:16px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: var(--card-shadow);
+    }
+    .small{ font-size:13px; color:var(--muted) }
+
+    /* timeline view */
+    .timeline{
+      display:flex; flex-direction:column; gap:14px; padding-top:6px;
+    }
+    .timeline .item{
+      display:flex; gap:12px; align-items:flex-start;
+    }
+    .timeline .dot{ width:12px; height:12px; border-radius:50%; background:var(--accent); margin-top:6px }
+    .timeline .content{ background:transparent; color:inherit }
+
+    /* modal */
+    .modal-backdrop{
+      position:fixed; left:0; right:0; top:0; bottom:0; display:none; align-items:center; justify-content:center; z-index:1400;
+      background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.85));
+      padding:20px;
+    }
+    .modal{
+      width:100%; max-width:1000px; max-height:92vh; overflow:auto;
+      background:linear-gradient(180deg,#051028,#07142a); padding:20px; border-radius:12px; border:1px solid rgba(255,255,255,0.04);
+    }
+    .modal header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .modal h2{ margin:0; font-size:18px }
+    .modal .meta{ color:var(--muted); font-size:13px }
+    .modal .content{ margin-top:14px; color:#dbefff; font-size:15px; line-height:1.6 }
+    .modal pre{ background:#021226; padding:12px; border-radius:8px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px }
+    .close-btn{ background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:16px }
+    .share-buttons{ display:flex; gap:8px; align-items:center }
+
+    /* form */
+    .form-row{ display:flex; gap:8px; margin-bottom:8px }
+    .form-row input, .form-row textarea, select {
+      width:100%; padding:10px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.04); color:inherit;
+      font-size:14px; outline:none;
+    }
+    .textarea { min-height:120px; resize:vertical; }
+
+    /* small helpers */
+    .muted{ color:var(--muted) }
+    .center{ display:flex; align-items:center; justify-content:center }
+    .hidden{ display:none }
+    .animate-fade{ animation:fadeIn .45s ease both; }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+    .empty{ color:var(--muted); padding:18px; text-align:center }
+    .copy-btn{ background:transparent; border:1px solid rgba(255,255,255,0.03); padding:6px 8px; border-radius:8px; cursor:pointer; color:var(--muted) }
+    small.note{ color:var(--muted); display:block; margin-top:8px; font-size:12px }
+  </style>
+</head>
+<body>
+
+  <header aria-hidden="false">
+    <div class="container topbar">
+      <div class="brand">
+        <div class="logo">AM</div>
+        <div>
+          <h1>Alex Mark — Walkthroughs</h1>
+          <p>Practical Hack The Box and CTF writeups • OSCP / CPTS prep notes</p>
+        </div>
+      </div>
+
+      <nav class="top-actions" aria-label="top actions">
+        <button id="newBtn" class="btn">+ New Walkthrough</button>
+        <a class="btn secondary" href="/timeline.html">Timeline</a>
+        <a class="btn secondary" href="https://x.com/alex_mark" target="_blank">Follow on X</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" role="main" aria-labelledby="pageTitle">
+    <h2 id="pageTitle" style="font-size:16px; margin-top:18px; color:#cfe6ff">All Walkthroughs</h2>
+
+    <div class="controls" role="region" aria-label="search and filters">
+      <div class="search" title="Search walkthroughs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.8"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="searchInput" placeholder="Search by title, tag, or note (e.g., sql, xss, priv-esc)" />
+      </div>
+
+      <div class="select">
+        <label class="small muted">Sort</label><br>
+        <select id="sortSelect" class="sort" aria-label="Sort posts">
+          <option value="new">Newest → Oldest</option>
+          <option value="old">Oldest → Newest</option>
+        </select>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <div class="tags-pills" id="tagsContainer" aria-label="filter by tags">
+        <!-- JS populated tag pills -->
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- LEFT: cards column -->
+      <section aria-label="walkthroughs list">
+        <div style="margin-top:18px" id="listArea">
+          <div id="cards" class="cards">
+            <!-- cards injected here -->
+          </div>
+
+          <div class="center" style="margin-top:18px">
+            <button id="loadMore" class="btn secondary">Load more</button>
+          </div>
+        </div>
+
+        <!-- timeline toggle + timeline container (hidden by default) -->
+        <div id="timelineArea" style="margin-top:18px; display:none;">
+          <div class="panel">
+            <h3 style="margin:0 0 8px 0">Hack The Box Timeline</h3>
+            <small class="muted">Machines you solved in chronological order</small>
+            <div class="timeline" id="timelineList" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: sidebar -->
+      <aside class="sidebar" aria-label="sidebar">
+        <div class="panel">
+          <strong>Filter by difficulty</strong>
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button class="tag-pill" data-diff="all">All</button>
+            <button class="tag-pill" data-diff="easy">Easy</button>
+            <button class="tag-pill" data-diff="medium">Medium</button>
+            <button class="tag-pill" data-diff="hard">Hard</button>
+          </div>
+
+          <hr style="border:none; height:1px; background:rgba(255,255,255,0.02); margin:12px 0">
+
+          <strong>Quick actions</strong>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px">
+            <button id="toggleView" class="btn secondary">Switch to Timeline</button>
+            <button id="exportMD" class="btn">Export All (Markdown)</button>
+          </div>
+
+          <hr style="border:none; height:1px; background:rgba(255,255,255,0.02); margin:12px 0">
+          <div class="small">
+            <strong>About</strong>
+            <p class="muted">I document step-by-step walkthroughs for learners. Each guide contains the vulnerability, exploitation steps, key commands, and a "What you learned" summary.</p>
+            <small class="note">Tip: when writing posts, include a short "Takeaways" section at the end — readers love actionable tips.</small>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Modal viewer -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <header>
+        <div>
+          <h2 id="modalTitle">Walkthrough Title</h2>
+          <div class="meta" id="modalMeta">HTB • medium • Jun 12, 2024</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <div class="share-buttons">
+            <button id="shareX" class="btn secondary" title="Share on X">Share X</button>
+            <button id="shareLinkedin" class="btn secondary" title="Share on LinkedIn">Share In</button>
+          </div>
+          <button class="close-btn" id="closeModal" aria-label="Close dialog">✕</button>
+        </div>
+      </header>
+
+      <article class="content" id="modalContent">
+        <!-- rendered markdown/html -->
+      </article>
+    </div>
+  </div>
+
+  <!-- Hidden add form -->
+  <div id="newForm" class="modal-backdrop" style="display:none;">
+    <div class="modal" style="max-width:760px">
+      <header>
+        <h2>New Walkthrough (Draft)</h2>
+        <button class="close-btn" id="closeNew">✕</button>
+      </header>
+
+      <div style="margin-top:12px">
+        <div class="form-row">
+          <input id="postTitle" placeholder="Title — e.g., HTB: Sentinel - PrivEsc walkthrough" />
+        </div>
+        <div class="form-row">
+          <input id="postDate" type="date" />
+          <select id="postDifficulty" style="width:140px">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input id="postTags" placeholder="Tags (comma separated) — e.g., sql,xss,priv-esc" />
+        </div>
+        <div class="form-row">
+          <textarea id="postBody" class="textarea" placeholder="Write your walkthrough in Markdown. Code blocks using ```bash or ```python are supported."></textarea>
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px">
+          <button class="btn secondary" id="discardBtn">Discard</button>
+          <button class="btn" id="saveBtn">Save & Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Sample data (client-side)
+     * Replace content with your real posts.
+     ***********************/
+    const sampleWalkthroughs = [
+      {
+        id: 'w1',
+        title: 'HTB: Sentinel — Initial Access to PrivEsc',
+        date: '2024-06-12',
+        difficulty: 'medium',
+        tags: ['ssrf','ssti','priv-esc'],
+        excerpt: 'Chain: SSRF → API leak → Admin panel → SSTI → Reverse shell → RCE. Key takeaways: validate external requests and sanitize templates.',
+        body: `# HTB: Sentinel - Full Walkthrough
+
+**Summary:** Attack chain demonstrating SSRF -> API leak -> SSTI -> RCE.
+
+## Recon
+- nmap -sC -sV -p- 10.10.10.10
+- discovered HTTP on 8080 and internal API on 127.0.0.1:5000
+
+## Exploitation
+1. SSRF
+\`\`\`bash
+curl 'http://sentinel.htb/proxy?url=http://127.0.0.1:5000/api/keys'
+\`\`\`
+2. API exposed an admin token.
+
+3. SSTI
+\`\`\`python
+payload = "{{ self.__class__.__mro__[2].__subclasses__()[40]('ls',shell=True).communicate() }}"
+\`\`\`
+
+## Post-Exploitation
+- Privilege escalation via outdated suid binary.
+
+### Key commands
+\`\`\`bash
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+\`\`\`
+
+### What you learned
+- Don't trust proxy endpoints. Always validate and filter URLs.
+- Template engines can execute code if unhandled.
+
+`,
+      },
+      {
+        id: 'w2',
+        title: 'PicoCTF: SQLi - Exfiltrate user data',
+        date: '2023-11-03',
+        difficulty: 'easy',
+        tags: ['sqli','web','picoCTF'],
+        excerpt: 'Classic UNION-based SQL injection to extract admin password hash and escalate to account takeover.',
+        body: `# PicoCTF - SQLi Walkthrough
+
+Vulnerable parameter: \`id\`.
+
+Payload example:
+\`\`\`sql
+' UNION SELECT username, password FROM users--
+\`\`\`
+
+After obtaining hash, cracked using \`hashcat\` and logged in as admin.
+
+**Takeaway:** Use parameterized queries.
+`
+      },
+      {
+        id: 'w3',
+        title: 'Local Lab — AWS S3 Misconfiguration Audit',
+        date: '2024-03-20',
+        difficulty: 'medium',
+        tags: ['aws','cloud','s3','scoutsuite'],
+        excerpt: 'Automated ScoutSuite scans + manual verification. Found public buckets and weak IAM policies.',
+        body: `# AWS S3 Misconfiguration
+
+Tools: ScoutSuite, aws-cli
+
+Commands:
+\`\`\`bash
+scout --profile=student --report=report.html
+aws s3api list-buckets --profile student
+\`\`\`
+
+**Remediations:** enforce bucket policies, enable encryption, tighten IAM roles.
+`
+      },
+      {
+        id: 'w4',
+        title: 'HTB: Bluebox - PrivEsc via sudo misconfig',
+        date: '2024-08-02',
+        difficulty: 'hard',
+        tags: ['linux','priv-esc','sudo'],
+        excerpt: 'Exploited misconfigured sudoers for local escalation. Used PATH hijack to escalate to root.',
+        body: `# Bluebox - PrivEsc
+
+Found in sudoers: user can run /usr/bin/python3 as root without password.
+
+Exploit:
+\`\`\`bash
+echo 'import os; os.system("/bin/bash")' > /tmp/mal.py
+sudo /usr/bin/python3 /tmp/mal.py
+\`\`\`
+
+**Lessons:** check allowed commands and environment variables.
+`
+      }
+    ];
+
+    /***********************
+     * Minimal markdown to HTML converter
+     * Supports: headings (#), code fences ```, inline code, bold/italic, links, lists
+     ***********************/
+    function mdToHtml(md) {
+      if (!md) return '';
+      // escape HTML special chars except codeblocks (we'll handle codeblocks separately)
+      // handle code fences
+      md = md.replace(/\r\n/g, '\n');
+      const codeBlocks = [];
+      md = md.replace(/```([\s\S]*?)```/g, (m, p1) => {
+        const idx = codeBlocks.push(p1) - 1;
+        return `@@CODEBLOCK${idx}@@`;
+      });
+
+      // escape angle brackets
+      md = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      // headings
+      md = md.replace(/^###### (.*$)/gim, '<h6>$1</h6>');
+      md = md.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
+      md = md.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+      md = md.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+      md = md.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+      md = md.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+      // unordered lists
+      md = md.replace(/^\s*[-\*] (.*)/gim, '<li>$1</li>');
+      md = md.replace(/(<li>[\s\S]*?<\/li>)/gim, (m) => {
+        // wrap contiguous lis into ul
+        return m;
+      });
+      // wrap consecutive <li> into <ul>
+      md = md.replace(/(<li>[\s\S]*?<\/li>)(\s*<li>[\s\S]*?<\/li>)+/g, (m) => {
+        const items = m.match(/<li>[\s\S]*?<\/li>/g).join('');
+        return `<ul>${items}</ul>`;
+      });
+
+      // bold/italic **text**
+      md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      md = md.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // inline code `code`
+      md = md.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // links [text](url)
+      md = md.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+      // paragraphs: split by double line breaks
+      const parts = md
+      // paragraphs
+      const parts = md.split(/\n{2,}/);
+      md = parts.map(p => {
+        if (
+          p.startsWith('<h') || p.startsWith('<ul>') ||
+          p.startsWith('<li>') || p.startsWith('<pre>') ||
+          p.startsWith('<code>') || p.startsWith('<blockquote>')
+        ) {
+          return p;
+        }
+        return `<p>${p}</p>`;
+      }).join('\n');
+
+      // restore code blocks
+      md = md.replace(/@@CODEBLOCK(\d+)@@/g, (m, idx) => {
+        const raw = codeBlocks[idx];
+        let lang = '';
+        let code = raw;
+        if (raw.includes('\n')) {
+          const firstLine = raw.split('\n')[0];
+          if (/^(bash|python|sql|sh|powershell)/.test(firstLine.trim())) {
+            lang = firstLine.trim();
+            code = raw.split('\n').slice(1).join('\n');
+          }
+        }
+        return `<pre><code class="${lang}">${code}</code></pre>`;
+      });
+
+      return md;
+    }
+
+    /***********************
+     * Render cards
+     ***********************/
+    let currentDiff = 'all';
+    let currentTag = null;
+    let page = 1;
+    const perPage = 4;
+
+    function renderCards() {
+      const cardsEl = document.getElementById('cards');
+      cardsEl.innerHTML = '';
+
+      let filtered = [...sampleWalkthroughs];
+      if (currentDiff !== 'all') {
+        filtered = filtered.filter(p => p.difficulty === currentDiff);
+      }
+      if (currentTag) {
+        filtered = filtered.filter(p => p.tags.includes(currentTag));
+      }
+
+      // sort
+      const sort = document.getElementById('sortSelect').value;
+      filtered.sort((a, b) => {
+        return sort === 'new'
+          ? new Date(b.date) - new Date(a.date)
+          : new Date(a.date) - new Date(b.date);
+      });
+
+      // search
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      if (query) {
+        filtered = filtered.filter(p =>
+          p.title.toLowerCase().includes(query) ||
+          p.tags.some(t => t.includes(query)) ||
+          p.excerpt.toLowerCase().includes(query)
+        );
+      }
+
+      const paginated = filtered.slice(0, page * perPage);
+
+      if (paginated.length === 0) {
+        cardsEl.innerHTML = `<div class="empty">No walkthroughs found.</div>`;
+        return;
+      }
+
+      paginated.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card animate-fade';
+        card.innerHTML = `
+          <div class="image">${p.difficulty}</div>
+          <div class="meta">
+            <h3>${p.title}</h3>
+            <p>${p.excerpt}</p>
+            <div class="row">
+              <div class="tags">
+                ${p.tags.map(t => `<span class="chip">${t}</span>`).join('')}
+              </div>
+              <span class="difficulty">${p.difficulty}</span>
+            </div>
+          </div>
+        `;
+        card.onclick = () => openModal(p);
+        cardsEl.appendChild(card);
+      });
+    }
+
+    /***********************
+     * Modal
+     ***********************/
+    function openModal(post) {
+      document.getElementById('modalTitle').innerText = post.title;
+      document.getElementById('modalMeta').innerText =
+        `${post.difficulty.toUpperCase()} • ${new Date(post.date).toDateString()}`;
+      document.getElementById('modalContent').innerHTML = mdToHtml(post.body);
+      document.getElementById('modalBackdrop').style.display = 'flex';
+      document.getElementById('modalBackdrop').setAttribute('aria-hidden', 'false');
+    }
+    function closeModal() {
+      document.getElementById('modalBackdrop').style.display = 'none';
+      document.getElementById('modalBackdrop').setAttribute('aria-hidden', 'true');
+    }
+
+    /***********************
+     * Init
+     ***********************/
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+
+      // search
+      document.getElementById('searchInput').addEventListener('input', () => {
+        page = 1;
+        renderCards();
+      });
+
+      // sort
+      document.getElementById('sortSelect').addEventListener('change', () => {
+        page = 1;
+        renderCards();
+      });
+
+      // load more
+      document.getElementById('loadMore').addEventListener('click', () => {
+        page++;
+        renderCards();
+      });
+
+      // close modal
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+
+      // difficulty filter
+      document.querySelectorAll('.tag-pill[data-diff]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentDiff = btn.dataset.diff;
+          page = 1;
+          renderCards();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

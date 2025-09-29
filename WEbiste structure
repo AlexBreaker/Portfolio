@@ -1,0 +1,150 @@
+Website pages I suggest (visitor-first, conversion-focused)
+
+Below is a concise, visitor-focused site map with purpose, key blocks, CTAs, and content templates — tuned to attract people who want Hack The Box walkthroughs, CTF learning, and to follow your cert journey.
+
+1. Home (/)
+
+Purpose: Hook visitors quickly — convey value and direct them to walkthroughs, timeline, and social.
+Key blocks (in order):
+
+Hero: short value headline + 1-line subhead (mention Hack The Box walkthroughs, OSCP prep).
+
+Primary CTA: Read Walkthroughs + Secondary CTA: My HtB Timeline.
+
+Latest / Featured Writeups (3 cards w/ tags & TL;DR).
+
+Progress snapshot: Machines solved count, certifications in progress, notable projects (EmooVy, AWS automation).
+
+Social proof / quick stats (Deans List, 25+ CTFs).
+
+Newsletter / Discord invite (email or Discord invite CTA).
+Footer: links to pages, contact, GitHub, privacy.
+
+2. Walkthroughs / Blog (/walkthroughs or /blog)
+
+Purpose: Main content hub — long-form walkthroughs optimized for search & learning.
+Page features:
+
+Filter by Tag (HTB, picoCTF, Web, PrivEsc, Cloud).
+
+Search and sort (newest, difficulty, popularity).
+
+Each post template: Title, difficulty, TL;DR (what you'll learn), Prerequisites, Tools used, Step-by-step with screenshots/code blocks, Mitigation/defense notes, Takeaways, Related posts, Next steps.
+SEO & UX: structured headings, code blocks, downloadable artifact (pcap/snippets), copyable commands, collapsible spoilers for answers.
+Primary CTA: Subscribe / Follow and Share on X / LinkedIn.
+
+3. Hack The Box Timeline (/timeline or /htb-timeline)
+
+Purpose: chronological record of machines you solved — great for credibility and showing progression.
+Layout options:
+
+Interactive timeline with cards by date: Machine name → difficulty → short lesson + link to full writeup.
+
+Filters: year, difficulty, category (web, rev, pwn, misc).
+
+Export: CSV / printable checklist for learners preparing for OSCP.
+Why visitors care: quickly find machines that teach a specific technique.
+
+4. Projects & Tools (/projects)
+
+Purpose: showcase technical depth (EmooVy, AWS misconfig automation, SSRF/SSTI app).
+Per-project page: summary, tech stack, problem solved, architecture diagram, repo or demo, lessons learned, how it helps you (and the reader).
+CTA: View Repo / Read Full Case Study.
+
+5. Certifications & Learning Journey (/certs or /learning)
+
+Purpose: show your roadmap (OSCP, CPTS, CCNA), study notes, recommended resources, timeline.
+Blocks:
+
+Current status (in progress) + expected dates.
+
+Study notes & cheat-sheets (OSCP lab tips, exam strategy).
+
+Recommended resources: labs, books, courses (link-out).
+CTA: Follow my progress (newsletter/Discord).
+
+6. About / Resume (/about)
+
+Purpose: humanize and provide credentials for recruiters / collaborators.
+Contents:
+
+Short “what I do for you” intro, quick bullets of skills, education, awards (Dean’s List), contact.
+
+Downloadable resume (PDF).
+
+Social links (X, LinkedIn, GitHub) and short testimonial / endorsements if available.
+
+7. Contact / Hire Me (/contact)
+
+Purpose: let companies, collaborators, or readers reach you.
+Fields: name, email, subject (writing, collaboration, CTF help), message, optional link to portfolio or GitHub.
+Add business email and social links. Include note about response time.
+
+8. Resources & Tools (/resources) — optional but high-value
+
+Purpose: evergreen list of tools, cheat sheets, recommended labs, Docker images, Burp extensions, AWS hardening scripts.
+Monetization potential: affiliate links, sponsor recommendations.
+
+9. Newsletter / Community (/newsletter or /community)
+
+Purpose: retain visitors and build an audience.
+Offer: monthly digest of walkthroughs, lab tips, and OSCP prep notes. Use double opt-in. Link to Discord server if you have one.
+
+10. Legal: Privacy, TOS, DMCA (/privacy, /tos)
+
+Purpose: required if you collect emails, offer downloads, or host tooling. Keep these accessible in footer.
+
+Utility & Technical Pages (not always visible in nav)
+
+404 page with search + popular walkthroughs.
+
+Sitemap.xml and RSS feed for blog posts.
+
+/robots.txt configured for SEO.
+
+Navigation & UX suggestions
+
+Top nav (left-to-right): Home • Walkthroughs • HTB Timeline • Projects • Learning Journey • About • Contact
+Include a persistent CTA button: Latest Writeup or Subscribe. Mobile-first responsive layout; readable code blocks and images that scale.
+
+Walkthrough post template (exact order to use as CMS blueprint)
+
+Title — Machine / Challenge name + difficulty.
+
+TL;DR — One-sentence value statement (what reader gains).
+
+Metadata — Date, tags, tools, difficulty, time-to-solve.
+
+Prerequisites — knowledge/tools needed.
+
+Steps (numbered) with commands, screenshots, and code blocks.
+
+Root / Flag verification (collapsible spoiler).
+
+Mitigations & defense notes (how to fix).
+
+Takeaways (3 bullet lessons).
+
+Related posts + Next machine suggestion.
+
+Comments / Discussion link (Disqus or GitHub Discussions) and share buttons.
+
+SEO, discoverability & technical checklist
+
+Use descriptive slugs: /walkthroughs/htb-machine-name-difficulty.
+
+Add structured data (schema.org: Article, HowTo) for walkthrough posts.
+
+Title tags and meta descriptions optimized for queries like “HTB [machine] walkthrough”.
+
+Generate RSS and allow subscribers via mailchimp or ConvertKit.
+
+Create an XML sitemap and submit to Google Search Console.
+
+Use canonical tags and social meta (Open Graph + Twitter Card).
+
+Accessibility: alt text for screenshots, keyboard-friendly code blocks.
+
+CMS / Hosting / Tools recommendations
+
+CMS: Static site generator (Hugo / Eleventy) or Next.js if you want React/SSG + dynamic features.

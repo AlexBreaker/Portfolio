@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HTB Timeline — Alex Mark</title>
+  <style>
+    :root{
+      --bg:#071025;
+      --panel:#0f1724;
+      --muted:#9ca3af;
+      --accent:#3b82f6;
+      --glass: rgba(255,255,255,0.03);
+      --card-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      --radius:12px;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,var(--bg), #021123 140%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:20px;
+    }
+    a{color:var(--accent); text-decoration:none}
+    .container{ max-width:var(--max-width); margin:0 auto; }
+
+    header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px }
+    header .title{ display:flex; gap:12px; align-items:center }
+    .logo{ width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,var(--accent), #1e40af); display:grid; place-items:center; font-weight:700; box-shadow: 0 8px 28px rgba(59,130,246,0.14)}
+    h1{ margin:0; font-size:18px }
+    p.lead{ margin:0; color:var(--muted); font-size:13px }
+
+    /* controls */
+    .controls{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:14px }
+    .search { padding:8px 10px; background:var(--panel); border-radius:10px; border:1px solid rgba(255,255,255,0.02); display:flex; gap:8px; align-items:center }
+    .search input{ background:transparent; border:0; outline:0; color:inherit; width:260px }
+    .select, .filter-group{ background:var(--panel); padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.02) }
+    .btn{ padding:8px 12px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.03); color:var(--accent); cursor:pointer; font-weight:600 }
+    .btn.ghost{ background:transparent; color:#cfe6ff; border:1px solid rgba(255,255,255,0.03) }
+    .btn.danger{ color:#ffb4b4; border-color: rgba(255,180,180,0.06) }
+
+    /* timeline */
+    .timeline-wrap{ display:grid; grid-template-columns: 1fr 300px; gap:22px; }
+    @media (max-width:980px){ .timeline-wrap{ grid-template-columns: 1fr } }
+
+    .timeline-panel{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); box-shadow: var(--card-shadow) }
+
+    .year-group{ margin-bottom:18px }
+    .year-header{ display:flex; align-items:center; gap:12px; margin-bottom:10px }
+    .year-header h3{ margin:0; font-size:16px }
+    .year-header .muted{ color:var(--muted); font-size:13px }
+
+    .machine-card{ display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border:1px solid rgba(255,255,255,0.02); margin-bottom:8px; cursor:pointer; transition:transform .16s ease, box-shadow .16s ease }
+    .machine-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(2,6,23,0.6) }
+    .m-date{ width:86px; font-size:13px; color:var(--muted); padding-top:4px }
+    .m-body{ flex:1 }
+    .m-title{ font-weight:700; margin-bottom:4px }
+    .m-meta{ color:var(--muted); font-size:13px; margin-bottom:6px }
+    .m-tags{ display:flex; gap:8px; flex-wrap:wrap }
+    .tag{ font-size:12px; padding:6px 8px; background:rgba(255,255,255,0.02); color:var(--muted); border-radius:8px }
+
+    /* right column */
+    .sidebar .panel{ margin-bottom:12px }
+    .small{ color:var(--muted); font-size:13px }
+
+    /* modal */
+    .modal-backdrop{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.9)); z-index:1400; padding:16px }
+    .modal{ background:#041227; width:100%; max-width:900px; border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03); max-height:86vh; overflow:auto }
+    .modal h2{ margin:0 0 6px 0 }
+    .close-btn{ background:transparent; border:0; color:var(--muted); font-size:18px; cursor:pointer }
+
+    .empty{ color:var(--muted); padding:18px; text-align:center }
+
+    /* printable checklist markup */
+    @media print {
+      body{ background:white; color:black }
+      .no-print{ display:none }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">
+        <div class="logo">AM</div>
+        <div>
+          <h1>Hack The Box Timeline</h1>
+          <p class="lead">Chronological record of machines I solved — filter by year, difficulty, and category.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; align-items:center" class="no-print">
+        <button id="addBtn" class="btn">+ Add Entry</button>
+        <button id="exportCSV" class="btn ghost">Export CSV</button>
+        <button id="printChecklist" class="btn ghost">Printable Checklist</button>
+      </div>
+    </header>
+
+    <div class="controls no-print">
+      <div class="search" aria-label="Search timeline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.8"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="search" placeholder="Search machine name, tags, or lesson..." />
+      </div>
+
+      <div class="select">
+        <label class="small">Year</label><br>
+        <select id="yearFilter" aria-label="Filter by year">
+          <option value="all">All years</option>
+        </select>
+      </div>
+
+      <div class="select">
+        <label class="small">Difficulty</label><br>
+        <select id="diffFilter" aria-label="Filter by difficulty">
+          <option value="all">All</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+
+      <div class="filter-group" id="categoryFilters" style="display:flex; gap:8px; align-items:center;">
+        <label class="small" style="margin-right:6px">Category</label>
+        <!-- categories populated via JS -->
+      </div>
+
+      <div style="flex:1"></div>
+
+      <div class="small muted">Why this matters: quickly find machines that teach a technique you need for OSCP prep.</div>
+    </div>
+
+    <div class="timeline-wrap" style="margin-top:14px">
+      <div id="timelineCol" class="timeline-panel" aria-live="polite">
+        <!-- Year groups inserted here -->
+      </div>
+
+      <aside class="sidebar">
+        <div class="panel timeline-panel">
+          <strong>Stats</strong>
+          <div style="margin-top:8px" class="small" id="statsArea">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+
+        <div class="panel timeline-panel">
+          <strong>Add / Edit</strong>
+          <p class="small muted">Add a new machine entry (saved locally). Use full writeup links to connect to your walkthroughs.</p>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-direction:column">
+            <input id="formTitle" placeholder="Machine name — e.g., Sentinel" />
+            <input id="formDate" type="date" />
+            <select id="formDiff">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+            <input id="formTags" placeholder="Tags / categories (comma separated) — e.g., web,ssrf,priv-esc" />
+            <input id="formLink" placeholder="Writeup link (relative or absolute) — e.g., /walkthroughs.html#w1" />
+            <textarea id="formLesson" rows="4" placeholder="Short lesson / key takeaway"></textarea>
+            <div style="display:flex; gap:8px; justify-content:flex-end">
+              <button id="formClear" class="btn ghost">Clear</button>
+              <button id="formSave" class="btn">Save Entry</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal viewer -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+        <div>
+          <h2 id="modalTitle">Machine name</h2>
+          <div class="small muted" id="modalMeta">Difficulty • date • tags</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <a id="openWriteup" class="btn ghost" target="_blank" rel="noopener">Open Writeup</a>
+          <button id="closeModal" class="close-btn">✕</button>
+        </div>
+      </div>
+      <hr style="border:none; height:1px; background:rgba(255,255,255,0.03); margin:12px 0">
+      <div id="modalLesson" style="line-height:1.6; color:#dbefff"></div>
+    </div>
+  </div>
+
+  <script>
+    /**************************************************************
+     * Sample data — replace or use Add Entry form to extend timeline
+     **************************************************************/
+    const sampleData = [
+      { id:'w1', name:'Sentinel', date:'2024-06-12', difficulty:'medium', tags:['web','ssrf','ssti','priv-esc'], lesson:'SSRF → API leak → SSTI → RCE. Validate proxy and sanitize templates.', link:'/walkthroughs.html#w1' },
+      { id:'w4', name:'Bluebox', date:'2024-08-02', difficulty:'hard', tags:['linux','priv-esc','sudo'], lesson:'Sudo misconfig allowed python as root — PATH hijack to escalate.', link:'/walkthroughs.html#w4' },
+      { id:'w3', name:'AWS S3 Audit', date:'2024-03-20', difficulty:'medium', tags:['cloud','aws','s3'], lesson:'ScoutSuite + manual checks found public buckets and weak IAM policies.', link:'/walkthroughs.html#w3' },
+      { id:'w2', name:'PicoCTF SQLi', date:'2023-11-03', difficulty:'easy', tags:['web','sqli','picoCTF'], lesson:'UNION-based SQLi to extract admin data — use parameterized queries.', link:'/walkthroughs.html#w2' }
+    ];
+
+    /**********************
+     * Storage & data helpers
+     **********************/
+    const STORAGE_KEY = 'am_htb_timeline_v1';
+    function loadData(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) {
+        // seed with sample data
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
+        return [...sampleData];
+      }
+      try{
+        return JSON.parse(raw);
+      } catch(e){
+        console.error('Failed parse storage', e);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
+        return [...sampleData];
+      }
+    }
+    function saveData(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+    let data = loadData();
+
+    /**********************
+     * UI population
+     **********************/
+    const timelineCol = document.getElementById('timelineCol');
+    const yearFilter = document.getElementById('yearFilter');
+    const diffFilter = document.getElementById('diffFilter');
+    const searchInput = document.getElementById('search');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const statsArea = document.getElementById('statsArea');
+
+    function getAllCategories(items){
+      const s = new Set();
+      items.forEach(i => (i.tags || []).forEach(t => s.add(t)));
+      return Array.from(s).sort();
+    }
+
+    function getAllYears(items){
+      const s = new Set();
+      items.forEach(i => { if(i.date) s.add(new Date(i.date).getFullYear()) });
+      return Array.from(s).sort((a,b)=>b-a);
+    }
+
+    // render category pills
+    function renderCategoryPills(){
+      categoryFilters.innerHTML = '';
+      const cats = getAllCategories(data);
+      const allBtn = document.createElement('button'); allBtn.className='btn ghost'; allBtn.innerText='All'; allBtn.dataset.cat='all';
+      categoryFilters.appendChild(allBtn);
+      allBtn.addEventListener('click', ()=>{ setActiveCategory('all'); renderTimeline();});
+      cats.forEach(c=>{
+        const b = document.createElement('button'); b.className='btn ghost'; b.style.textTransform='capitalize'; b.innerText=c.replace(/-/g,' ');
+        b.dataset.cat = c;
+        b.addEventListener('click', ()=>{ setActiveCategory(c); renderTimeline(); });
+        categoryFilters.appendChild(b);
+      });
+    }
+    let activeCategory = 'all';
+    function setActiveCategory(cat){
+      activeCategory = cat;
+      // style active
+      categoryFilters.querySelectorAll('button').forEach(btn => {
+        if(btn.dataset.cat === cat) { btn.style.background = 'linear-gradient(90deg,var(--accent), #1e40af)'; btn.style.color='white'; btn.style.border='none'; }
+        else { btn.style.background='transparent'; btn.style.color=''; btn.style.border='1px solid rgba(255,255,255,0.03)'; }
+      });
+    }
+
+    // populate year filter
+    function populateYearFilter(){
+      const years = getAllYears(data);
+      yearFilter.innerHTML = '<option value="all">All years</option>';
+      years.forEach(y => {
+        const o = document.createElement('option'); o.value = String(y); o.innerText = String(y);
+        yearFilter.appendChild(o);
+      });
+    }
+
+    // render timeline grouped by year -> sorted newest first
+    function renderTimeline(){
+      const q = searchInput.value.trim().toLowerCase();
+      const y = yearFilter.value;
+      const diff = diffFilter.value;
+
+      // apply filters
+      let filtered = data.slice();
+      if(activeCategory !== 'all'){
+        filtered = filtered.filter(it => (it.tags || []).includes(activeCategory));
+      }
+      if(y !== 'all'){
+        filtered = filtered.filter(it => new Date(it.date).getFullYear() === Number(y));
+      }
+      if(diff !== 'all'){
+        filtered = filtered.filter(it => it.difficulty === diff);
+      }
+      if(q){
+        filtered = filtered.filter(it =>
+          (it.name && it.name.toLowerCase().includes(q)) ||
+          (it.lesson && it.lesson.toLowerCase().includes(q)) ||
+          ((it.tags || []).some(t => t.toLowerCase().includes(q)))
+        );
+      }
+
+      // sort by date desc
+      filtered.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+      // group by year
+      const groups = {};
+      filtered.forEach(it => {
+        const yr = new Date(it.date).getFullYear();
+        groups[yr] = groups[yr] || [];
+        groups[yr].push(it);
+      });
+
+      timelineCol.innerHTML = '';
+      if(Object.keys(groups).length === 0){
+        timelineCol.innerHTML = '<div class="empty">No machines found for those filters.</div>';
+        updateStats();
+        return;
+      }
+
+      Object.keys(groups).sort((a,b)=>b-a).forEach(year=>{
+        const div = document.createElement('div'); div.className='year-group';
+        const header = document.createElement('div'); header.className='year-header';
+        header.innerHTML = `<h3>${year}</h3><div class="muted">${groups[year].length} machine(s)</div>`;
+        div.appendChild(header);
+
+        groups[year].forEach(m=>{
+          const card = document.createElement('div'); card.className='machine-card';
+          card.tabIndex = 0;
+          card.innerHTML = `
+            <div class="m-date">${new Date(m.date).toLocaleDateString()}</div>
+            <div class="m-body">
+              <div class="m-title">${m.name}</div>
+              <div class="m-meta">${m.difficulty.toUpperCase()} • ${ (m.tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ') }</div>
+              <div class="m-lesson small">${m.lesson}</div>
+            </div>
+          `;
+          card.addEventListener('click', ()=> openModal(m));
+          card.addEventListener('keypress', (e)=> { if(e.key==='Enter') openModal(m); });
+          div.appendChild(card);
+        });
+
+        timelineCol.appendChild(div);
+      });
+
+      updateStats();
+    }
+
+    function updateStats(){
+      const total = data.length;
+      const byDiff = data.reduce((acc,it)=>{
+        acc[it.difficulty] = (acc[it.difficulty]||0) + 1; return acc;
+      },{});
+      statsArea.innerHTML = `
+        <div>Total machines: <strong>${total}</strong></div>
+        <div style="margin-top:8px">
+          <div class="small">By difficulty:</div>
+          <div style="display:flex; gap:8px; margin-top:6px">
+            <div class="small">Easy: <strong>${byDiff.easy||0}</strong></div>
+            <div class="small">Medium: <strong>${byDiff.medium||0}</strong></div>
+            <div class="small">Hard: <strong>${byDiff.hard||0}</strong></div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**********************
+     * Modal
+     **********************/
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalLesson = document.getElementById('modalLesson');
+    const openWriteup = document.getElementById('openWriteup');
+
+    function openModal(item){
+      modalTitle.innerText = item.name;
+      modalMeta.innerText = `${item.difficulty.toUpperCase()} • ${ new Date(item.date).toDateString() } • ${(item.tags||[]).join(', ')}`;
+      modalLesson.innerText = item.lesson || '';
+      openWriteup.href = item.link || '#';
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){ modalBackdrop.style.display = 'none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) closeModal(); });
+
+    /**********************
+     * Add / Save form
+     **********************/
+    const formTitle = document.getElementById('formTitle');
+    const formDate = document.getElementById('formDate');
+    const formDiff = document.getElementById('formDiff');
+    const formTags = document.getElementById('formTags');
+    const formLink = document.getElementById('formLink');
+    const formLesson = document.getElementById('formLesson');
+    document.getElementById('formSave').addEventListener('click', ()=>{
+      const name = formTitle.value.trim();
+      const date = formDate.value;
+      const difficulty = formDiff.value;
+      const tags = formTags.value.split(',').map(s=>s.trim()).filter(Boolean);
+      const link = formLink.value.trim();
+      const lesson = formLesson.value.trim();
+      if(!name || !date){
+        alert('Title and date are required.');
+        return;
+      }
+      const id = 'm' + Date.now();
+      const entry = { id, name, date, difficulty, tags, link, lesson };
+      data.push(entry);
+      saveData(data);
+      // refresh UI
+      populateYearFilter();
+      renderCategoryPills();
+      renderTimeline();
+      // clear
+      formTitle.value=''; formDate.value=''; formTags.value=''; formLink.value=''; formLesson.value='';
+      // focus feedback
+      alert('Saved — entry added to timeline (stored locally).');
+    });
+    document.getElementById('formClear').addEventListener('click', ()=>{
+      formTitle.value=''; formDate.value=''; formTags.value=''; formLink.value=''; formLesson.value='';
+    });
+
+    /**********************
+     * Export CSV & Printable
+     **********************/
+    function exportCSV(){
+      if(!data.length){ alert('No entries to export.'); return; }
+      const header = ['id','name','date','difficulty','tags','lesson','link'];
+      const rows = data.map(d => [
+        d.id,
+        `"${d.name.replace(/"/g,'""')}"`,
+        d.date,
+        d.difficulty,
+        `"${(d.tags||[]).join(';').replace(/"/g,'""')}"`,
+        `"${(d.lesson||'').replace(/"/g,'""')}"`,
+        d.link || ''
+      ].join(','));
+      const csv = [header.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'htb_timeline.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+    document.getElementById('exportCSV').addEventListener('click', exportCSV);
+
+    function openPrintableChecklist(){
+      // Build a minimal printable HTML from filtered timeline
+      const q = searchInput.value.trim().toLowerCase();
+      const y = yearFilter.value;
+      const diff = diffFilter.value;
+      const cat = activeCategory;
+
+      let filtered = data.slice();
+      if(cat !== 'all') filtered = filtered.filter(it => (it.tags||[]).includes(cat));
+      if(y !== 'all') filtered = filtered.filter(it => new Date(it.date).getFullYear() === Number(y));
+      if(diff !== 'all') filtered = filtered.filter(it => it.difficulty === diff);
+      if(q) filtered = filtered.filter(it => (it.name||'').toLowerCase().includes(q) || (it.lesson||'').toLowerCase().includes(q) || (it.tags||[]).some(t=>t.includes(q)));
+
+      // sort by date asc for checklist (learners might prefer chronological)
+      filtered.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+      const rows = filtered.map(r=>`<li><label><input type="checkbox" /> ${r.name} — ${r.difficulty.toUpperCase()} — ${new Date(r.date).toLocaleDateString()} <a href="${r.link}">writeup</a><div style="color:#666">${r.lesson}</div></label></li>`).join('');
+      const html = `
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>HTB Checklist</title>
+<style>
+  body{ font-family: Arial, sans-serif; padding:20px; color:#111 }
+  h1{ margin-bottom:8px }
+  li{ margin-bottom:12px }
+  a{ color:#0366d6 }
+  .muted{ color:#666; font-size:13px }
+</style>
+</head>
+<body>
+  <h1>HTB Printable Checklist</h1>
+  <p class="muted">Generated: ${new Date().toLocaleString()}</p>
+  <ol>${rows}</ol>
+  <script>window.print()</script>
+</body>
+</html>`;
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+    }
+    document.getElementById('printChecklist').addEventListener('click', openPrintableChecklist);
+
+    /**********************
+     * Wire up filters & init
+     **********************/
+    document.getElementById('addBtn').addEventListener('click', ()=> {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      document.getElementById('formTitle').focus();
+    });
+
+    searchInput.addEventListener('input', ()=> renderTimeline());
+    yearFilter.addEventListener('change', ()=> renderTimeline());
+    diffFilter.addEventListener('change', ()=> renderTimeline());
+
+    // init UI
+    (function init(){
+      populateYearFilter();
+      renderCategoryPills();
+      renderTimeline();
+      setActiveCategory('all');
+    })();
+
+    // Save to storage when page unloads (in case user added entries but didn't save via button)
+    window.addEventListener('beforeunload', ()=> saveData(data));
+  </script>
+</body>
+</html>

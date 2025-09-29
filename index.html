@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omar Al-Khaldi | Cybersecurity & AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --primary-blue: #1e3a8a;
+      --secondary-blue: #3b82f6;
+      --text-light: #e5e7eb;
+      --text-muted: #9ca3af;
+      --card-bg: #1f2937;
+      --bg-dark: #111827;
+      --border-light: #374151;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-light);
+      background: var(--bg-dark);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Subtle matrix-style background */
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    
+    .matrix-column {
+      position: absolute;
+      top: -100%;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--secondary-blue);
+      animation: matrixFall linear infinite;
+      text-shadow: 0 0 4px var(--secondary-blue);
+    }
+    
+    @keyframes matrixFall {
+      to { top: 100%; }
+    }
+    
+    /* Subtle scanline effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(59, 130, 246, 0.02) 2px,
+        rgba(59, 130, 246, 0.02) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 10s linear infinite;
+    }
+    
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(20px); }
+    }
+    
+    /* Professional navbar */
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 0.8rem 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      z-index: 1000;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+    
+    .logo::before {
+      content: '> ';
+      color: var(--secondary-blue);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      position: relative;
+      transition: color 0.3s;
+    }
+    
+    .nav-links a::before,
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      height: 2px;
+      background: var(--secondary-blue);
+      transition: width 0.3s;
+    }
+    
+    .nav-links a::before {
+      left: 50%;
+      width: 0;
+      transform: translateX(-50%);
+    }
+    
+    .nav-links a:hover::before {
+      width: 100%;
+    }
+    
+    .nav-links a:hover {
+      color: var(--secondary-blue);
+    }
+    
+    /* Hero with clean aesthetic */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 5% 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-container {
+      max-width: 1400px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 4rem;
+      align-items: center;
+    }
+    
+    .terminal {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+      border-radius: 8px;
+    }
+    
+    .terminal::before {
+      content: 'SYSTEM_PROFILE Clive';
+      position: absolute;
+      top: -1px;
+      left: 20px;
+      background: var(--bg-dark);
+      padding: 5px 15px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--secondary-blue);
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .terminal-line {
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: terminalType 0.5s forwards;
+    }
+    
+    .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+    .terminal-line:nth-child(2) { animation-delay: 1s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.5s; }
+    .terminal-line:nth-child(4) { animation-delay: 2s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    
+    @keyframes terminalType {
+      to { opacity: 1; }
+    }
+    
+    .prompt {
+      color: var(--secondary-blue);
+      margin-right: 10px;
+    }
+    
+    .command {
+      color: var(--text-light);
+    }
+    
+    .hero-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 2rem 0 1rem;
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn-cyber {
+      padding: 0.8rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--secondary-blue);
+      color: var(--secondary-blue);
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-cyber:hover {
+      background: var(--secondary-blue);
+      color: var(--bg-dark);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-secondary {
+      border-color: var(--primary-blue);
+      color: var(--primary-blue);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary-blue);
+      color: var(--text-light);
+    }
+    
+    /* Subtle hologram avatar */
+    .hologram {
+      width: 400px;
+      height: 400px;
+      position: relative;
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    .hologram-ring {
+      position: absolute;
+      border: 1px solid;
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    
+    .hologram-ring:nth-child(1) {
+      inset: 0;
+      border-color: var(--secondary-blue);
+      animation-delay: 0s;
+    }
+    
+    .hologram-ring:nth-child(2) {
+      inset: 20px;
+      border-color: var(--primary-blue);
+      animation-delay: 0.5s;
+    }
+    
+    .hologram-ring:nth-child(3) {
+      inset: 40px;
+      border-color: var(--text-muted);
+      animation-delay: 1s;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { 
+        opacity: 0.8;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.3;
+        transform: scale(1.03);
+      }
+    }
+    
+    .hologram-core {
+      position: absolute;
+      inset: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--secondary-blue) 0%, transparent 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--secondary-blue);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    /* Section styles */
+    section {
+      padding: 6rem 5%;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      color: var(--secondary-blue);
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    
+    .section-label::before {
+      content: '// ';
+    }
+    
+    h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+    
+    /* About section as code block */
+    .code-block {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      line-height: 1.8;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .code-line {
+      margin: 0.5rem 0;
+    }
+    
+    .code-comment {
+      color: var(--text-muted);
+    }
+    
+    .code-keyword {
+      color: var(--secondary-blue);
+    }
+    
+    .code-string {
+      color: var(--text-light);
+    }
+    
+    .code-function {
+      color: var(--primary-blue);
+    }
+    
+    /* Skills hexagon grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .skill-hex {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 2rem;
+      border-radius: 12px;
+      transition: all 0.3s;
+      text-align: center;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .skill-hex:hover {
+      border-color: var(--secondary-blue);
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+      transform: scale(1.03);
+    }
+    
+    .skill-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--secondary-blue);
+    }
+    
+    .skill-hex h3 {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-light);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .skill-hex p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    /* Projects as cards */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .project-glitch {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 2rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    
+    .project-glitch:hover {
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+      transform: translateY(-5px);
+    }
+    
+    .project-glitch h3 {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .project-glitch p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    .tech-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .tech-tag {
+      padding: 0.3rem 0.8rem;
+      background: transparent;
+      border: 1px solid var(--secondary-blue);
+      color: var(--secondary-blue);
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      border-radius: 4px;
+    }
+    
+    /* Contact as terminal input */
+    .contact-terminal {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .contact-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .contact-item {
+      padding: 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-left: 3px solid var(--secondary-blue);
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border-radius: 4px;
+    }
+    
+    .contact-item:hover {
+      background: rgba(59, 130, 246, 0.05);
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+      transform: translateX(5px);
+    }
+    
+    .contact-label {
+      color: var(--secondary-blue);
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .contact-value {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 3rem 5%;
+      text-align: center;
+      border-top: 1px solid var(--border-light);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 1;
+    }
+    
+    footer::before {
+      content: '> SYSTEM END';
+      display: block;
+      color: var(--secondary-blue);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .hologram {
+        margin: 0 auto;
+      }
+      
+      .cta-buttons {
+        justify-content: center;
+      }
+      
+      nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .hero-title {
+        font-size: 3rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      h2 {
+        font-size: 2rem;
+      }
+      
+      .hologram {
+        width: 300px;
+        height: 300px;
+      }
+      
+      .projects-grid,
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      nav {
+        top: 10px;
+        padding: 0.6rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Matrix background -->
+  <div class="matrix-bg" id="matrix"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">Omar_Al-Khaldi</div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div>
+        <div class="terminal">
+          <div class="terminal-line">
+            <span class="prompt">root@security:~$</span>
+            <span class="command">whoami</span>
+          </div>
+          <div class="terminal-line">Omar Al-Khaldi</div>
+          <div class="terminal-line">
+            <span class="prompt">root@security:~$</span>
+            <span class="command">cat skills.txt</span>
+          </div>
+          <div class="terminal-line">Cybersecurity Expert | Penetration Tester</div>
+          <div class="terminal-line">AI/ML Engineer | Cloud Security Architect</div>
+        </div>
+        
+        <h1 class="hero-title">Omar Al-Khaldi</h1>
+        <p class="subtitle">Building secure systems for a digital future</p>
+        
+        <div class="cta-buttons">
+          <a href="#projects" class="btn-cyber">View Projects</a>
+          <a href="#contact" class="btn-cyber btn-secondary">Get in Touch</a>
+        </div>
+      </div>
+      
+	<div class="hologram">
+	  <div class="hologram-ring"></div>
+	  <div class="hologram-ring"></div>
+	  <div class="hologram-ring"></div>
+	  <div class="hologram-core">
+	    <img src="avatar.png" alt="Alex Mark - Cybersecurity Professional" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+	  </div>
+	</div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <div class="section-header">
+      <div class="section-label">System Information</div>
+      <h2>About</h2>
+    </div>
+    <div class="code-block">
+      <div class="code-line"><span class="code-comment">// Personal Bio</span></div>
+      <div class="code-line"><span class="code-keyword">class</span> <span class="code-function">OmarAl-Khaldi</span> {</div>
+      <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">constructor</span>() {</div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;this.role = <span class="code-string">"Cybersecurity Student at University of Wollongong in Dubai"</span>;</div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;this.certification = <span class="code-string">"Preparing for OSCP"</span>;</div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;this.expertise = [<span class="code-string">"Penetration Testing"</span>, <span class="code-string">"Cloud Security"</span>, <span class="code-string">"AI/ML"</span>, <span class="code-string">"Full-Stack Development"</span>];</div>
+      <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;this.mission = <span class="code-string">"Creating secure, innovative solutions for tomorrow's challenges"</span>;</div>
+      <div class="code-line">&nbsp;&nbsp;}</div>
+      <div class="code-line">}</div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section id="skills">
+    <div class="section-header">
+      <div class="section-label">Arsenal</div>
+      <h2>Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-hex">
+        <div class="skill-icon">🔓</div>
+        <h3>Penetration Testing</h3>
+        <p>XSS · SQLi · Burp Suite · Metasploit</p>
+      </div>
+      <div class="skill-hex">
+        <div class="skill-icon">☁️</div>
+        <h3>Cloud Security</h3>
+        <p>AWS · Azure · IAM · Automation</p>
+      </div>
+      <div class="skill-hex">
+        <div class="skill-icon">🧠</div>
+        <h3>AI/ML</h3>
+        <p>TensorFlow · Neural Nets · Detection</p>
+      </div>
+      <div class="skill-hex">
+        <div class="skill-icon">⚡</div>
+        <h3>DevOps</h3>
+        <p>Node.js · React · Docker · CI/CD</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects">
+    <div class="section-header">
+      <div class="section-label">Portfolio</div>
+      <h2>Projects</h2>
+    </div>
+    <div class="projects-grid">
+      <div class="project-glitch">
+        <h3>EmooVy - Malware Detection AI</h3>
+        <p>Advanced neural network achieving 95% accuracy in malware detection. Implemented deep learning techniques with comprehensive data preprocessing and model optimization for real-world threat identification.</p>
+        <div class="tech-tags">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">TensorFlow</span>
+          <span class="tech-tag">Scikit-learn</span>
+        </div>
+      </div>
+      
+      <div class="project-glitch">
+        <h3>Hack the Box & CTF Mastery</h3>
+        <p>Conquered 25+ CTF challenges across multiple difficulty tiers. Comprehensive documentation of vulnerabilities, exploitation vectors, and advanced penetration testing methodologies.</p>
+        <div class="tech-tags">
+          <span class="tech-tag">Security</span>
+          <span class="tech-tag">CTF</span>
+          <span class="tech-tag">Exploits</span>
+        </div>
+      </div>
+      
+      <div class="project-glitch">
+        <h3>AWS Security Automation</h3>
+        <p>Engineered automated monitoring system for AWS infrastructure. Proactive detection of S3 and EC2 misconfigurations resulting in 80% reduction in security exposure risk.</p>
+        <div class="tech-tags">
+          <span class="tech-tag">AWS</span>
+          <span class="tech-tag">Lambda</span>
+          <div class="tech-tag">Automation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact">
+    <div class="section-header">
+      <div class="section-label">Network</div>
+      <h2>Contact</h2>
+    </div>
+    <div class="contact-terminal">
+      <div class="code-line"><span class="code-comment">// Contact Information</span></div>
+      <div class="contact-links">
+        <a href="mailto:OmarAl-Khaldi@example.com" class="contact-item">
+          <div class="contact-label">Email</div>
+          <div class="contact-value">OmarAl-Khaldi@example.com</div>
+        </a>
+        <a href="https://linkedin.com/in/OmarAl-Khaldi" class="contact-item">
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-value">/in/OmarAl-Khaldi</div>
+        </a>
+        <a href="https://github.com/OmarAl-Khaldi" class="contact-item">
+          <div class="contact-label">GitHub</div>
+          <div class="contact-value">/OmarAl-Khaldi</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Omar Al-Khaldi. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

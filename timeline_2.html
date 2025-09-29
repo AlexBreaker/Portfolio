@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HTB Timeline — Alex Mark</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1f1f1f;
+    --card:#2c2c2c;
+    --muted:#cfcfcf;
+    --accent:#4f46e5;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:var(--bg);
+    color:#f0f0f0;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.5;
+  }
+
+  /* Container */
+  .timeline-wrap{
+    max-width:1100px;
+    margin:48px auto;
+    padding:24px;
+  }
+
+  .page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1.5rem;
+  }
+  .page-header h1{
+    margin:0;
+    font-size:1.5rem;
+    font-weight:700;
+  }
+  .page-header p{margin:0;color:var(--muted);font-size:0.95rem}
+
+  /* Timeline layout */
+  .timeline{
+    position:relative;
+    padding-left:28px;
+    border-left:2px solid rgba(255,255,255,0.06);
+  }
+
+  /* Year group header */
+  .year-group{
+    margin:2rem 0;
+    position:relative;
+  }
+  .year-label{
+    display:inline-block;
+    background:var(--card);
+    color:#fff;
+    padding:6px 12px;
+    border-radius:999px;
+    font-weight:600;
+    box-shadow:0 6px 20px rgba(0,0,0,0.5);
+    margin-bottom:12px;
+  }
+
+  /* Individual entry */
+  .tl-item{
+    position:relative;
+    margin:18px 0 18px 18px;
+    padding:14px 18px;
+    background:linear-gradient(180deg,var(--glass),transparent);
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    transition:transform .25s ease, box-shadow .25s ease;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .tl-item:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 40px rgba(79,70,229,0.18);
+  }
+
+  /* The node on the timeline line */
+  .tl-item::before{
+    content:'';
+    position:absolute;
+    left:-38px;                      /* positions it on the vertical line */
+    top:20px;
+    width:14px;
+    height:14px;
+    background:var(--card);
+    border-radius:50%;
+    border:3px solid var(--accent);
+    box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  .tl-meta{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin-bottom:6px;
+  }
+  .tl-date{
+    min-width:78px;
+    padding:6px 10px;
+    border-radius:8px;
+    background:rgba(79,70,229,0.08);
+    color:var(--accent);
+    font-weight:700;
+    font-size:0.9rem;
+    text-align:center;
+  }
+  .tl-title{
+    font-weight:700;
+    font-size:1rem;
+    color:#fff;
+  }
+  .tl-desc{
+    color:var(--muted);
+    font-size:0.95rem;
+    margin-top:6px;
+  }
+
+  /* clickable full-card link */
+  .tl-link{
+    display:block;
+    color:inherit;
+    text-decoration:none;
+  }
+
+  /* small tag / meta row */
+  .tl-tags{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    background:rgba(255,255,255,0.03);
+    color:var(--muted);
+    padding:6px 8px;
+    border-radius:8px;
+    font-size:0.82rem;
+    border:1px solid rgba(255,255,255,0.02);
+  }
+
+  /* subtle appear on scroll */
+  .fade-in {
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .fade-in.visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width:720px){
+    .tl-date{min-width:66px;font-size:0.86rem}
+    .timeline-wrap{padding:16px}
+    .page-header{flex-direction:column;align-items:flex-start;gap:.5rem}
+    .tl-item{margin-left:14px;padding:12px}
+    .tl-item::before{left:-34px;top:18px;width:12px;height:12px}
+  }
+</style>
+</head>
+<body>
+
+<main class="timeline-wrap">
+  <header class="page-header">
+    <div>
+      <h1>Hack the Box — Timeline</h1>
+      <p>Dates show: <strong>Year</strong> and <em>(month/day)</em>. Each entry links to the external write-up.</p>
+    </div>
+    <div style="text-align:right;color:var(--muted);font-size:0.95rem">
+      <div>Total solved: <strong>25+</strong></div>
+      <div style="margin-top:6px"><a href="index.html" style="color:var(--accent);text-decoration:none">← Back to Write-Ups</a></div>
+    </div>
+  </header>
+
+  <section class="timeline" id="timeline">
+
+    <!-- YEAR 2025 -->
+    <div class="year-group fade-in">
+      <div class="year-label">2025</div>
+
+      <a class="tl-link" href="https://example.com/writeup-2025-09-12" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Sep 12</div>
+            <div class="tl-title">HTB: Sleuth — Web + PrivEsc</div>
+          </div>
+          <p class="tl-desc">Full chain: RCE via SSTI → credential leak → privilege escalation to root. Tools: Burp, nmap, linpeas.</p>
+          <div class="tl-tags">
+            <span class="tag">Web</span><span class="tag">SSTI</span><span class="tag">PrivEsc</span>
+          </div>
+        </article>
+      </a>
+
+      <a class="tl-link" href="https://example.com/writeup-2025-07-04" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Jul 04</div>
+            <div class="tl-title">CTF: SQL Break — Auth Bypass</div>
+          </div>
+          <p class="tl-desc">Chained blind SQLi to extract admin hash and bypass authentication. Demo queries and payloads included.</p>
+          <div class="tl-tags">
+            <span class="tag">SQLi</span><span class="tag">Auth Bypass</span>
+          </div>
+        </article>
+      </a>
+    </div>
+
+    <!-- YEAR 2024 -->
+    <div class="year-group fade-in">
+      <div class="year-label">2024</div>
+
+      <a class="tl-link" href="https://example.com/writeup-2024-11-02" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Nov 02</div>
+            <div class="tl-title">HTB: ProxyChain — SSRF & API Leak</div>
+          </div>
+          <p class="tl-desc">Discovered SSRF endpoint and accessed internal service to retrieve API keys. Includes remediation notes.</p>
+          <div class="tl-tags">
+            <span class="tag">SSRF</span><span class="tag">API</span>
+          </div>
+        </article>
+      </a>
+
+      <a class="tl-link" href="https://example.com/writeup-2024-08-18" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Aug 18</div>
+            <div class="tl-title">CTF: NetWatch — Service Enumeration</div>
+          </div>
+          <p class="tl-desc">Deep network enumeration and exploitation of a misconfigured service. Walkthrough of nmap & smb tools used.</p>
+          <div class="tl-tags">
+            <span class="tag">Net</span><span class="tag">Enumeration</span>
+          </div>
+        </article>
+      </a>
+
+      <a class="tl-link" href="https://example.com/writeup-2024-04-07" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Apr 07</div>
+            <div class="tl-title">CTF: OSINT Recon Playbook</div>
+          </div>
+          <p class="tl-desc">OSINT chain: domain pivoting, subdomain discovery, and theft of exposed credentials via Git leaks.</p>
+          <div class="tl-tags">
+            <span class="tag">OSINT</span><span class="tag">Recon</span>
+          </div>
+        </article>
+      </a>
+    </div>
+
+    <!-- YEAR 2023 -->
+    <div class="year-group fade-in">
+      <div class="year-label">2023</div>
+
+      <a class="tl-link" href="https://example.com/writeup-2023-12-22" target="_blank" rel="noopener">
+        <article class="tl-item">
+          <div class="tl-meta">
+            <div class="tl-date">Dec 22</div>
+            <div class="tl-title">CTF: TinyBox — Sandbox Escape</div>
+          </div>
+          <p class="tl-desc">Sandbox bypass using insecure deserialization; includes PoC and suggested fixes.</p>
+          <div class="tl-tags">
+            <span class="tag">Deserialization</span><span class="tag">PoC</span>
+          </div>
+        </article>
+      </a>
+
+    </div>
+
+  </section>
+</main>
+
+<script>
+  // Simple intersection observer to add .visible to fade-in elements
+  (function(){
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting) {
+          e.target.classList.add('visible');
+          // optionally unobserve to avoid re-trigger
+          obs.unobserve(e.target);
+        }
+      });
+    }, {threshold: 0.08});
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  })();
+</script>
+
+</body>
+</html>
