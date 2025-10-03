@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certifications | Alex Mark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6c757d;
+      --accent: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border: #dee2e6;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      line-height: 1.7;
+      padding: 3rem 5%;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+    
+    .back-link:hover {
+      color: var(--accent);
+    }
+    
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+    
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    
+    /* Legend */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .legend-dot.in-progress {
+      background: var(--warning);
+    }
+    
+    .legend-dot.planned {
+      background: var(--border);
+    }
+    
+    .legend-dot.failed {
+      background: var(--danger);
+    }
+    
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding: 2rem 0;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+      transform: translateX(-50%);
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .timeline-item:nth-child(odd) {
+      flex-direction: row;
+    }
+    
+    .timeline-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    
+    .timeline-content {
+      width: calc(50% - 2rem);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .timeline-content:hover {
+      box-shadow: 0 8px 24px var(--shadow);
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+    
+    .timeline-marker {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid var(--bg-primary);
+      z-index: 10;
+    }
+    
+    .timeline-marker.in-progress {
+      background: var(--warning);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+      animation: pulse-marker 2s ease-in-out infinite;
+    }
+    
+    .timeline-marker.planned {
+      background: var(--border);
+    }
+    
+    .timeline-marker.failed {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+    }
+    
+    @keyframes pulse-marker {
+      0%, 100% {
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.1);
+      }
+    }
+    
+    .cert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .cert-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .cert-badge.in-progress {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .cert-badge.planned {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+    }
+    
+    .cert-badge.failed {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    
+    .cert-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    
+    .cert-org {
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    
+    .cert-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    .cert-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .skill-tag {
+      padding: 0.4rem 0.8rem;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Responsive */
+    @media (max-width: 968px) {
+      .timeline::before {
+        left: 20px;
+      }
+      
+      .timeline-item {
+        flex-direction: row !important;
+        padding-left: 50px;
+      }
+      
+      .timeline-content {
+        width: 100%;
+      }
+      
+      .timeline-marker {
+        left: 20px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .timeline-content {
+        padding: 1.5rem;
+      }
+      
+      .cert-title {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <a href="#" class="back-link">← Back to Portfolio</a>
+      <h1>Certifications Timeline</h1>
+      <p class="subtitle">My journey through cybersecurity certifications, showcasing current progress and planned credentials</p>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Planned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Failed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-dot in-progress"></span>
+        <span>In Progress</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot planned"></span>
+        <span>Planned</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot failed"></span>
+        <span>Failed</span>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline">
+      
+      <!-- CPTS - In Progress -->
+      <div class="timeline-item">
+        <div class="timeline-marker in-progress"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">CPTS</h3>
+              <span class="cert-org">Hack The Box</span>
+            </div>
+            <span class="cert-badge in-progress">In Progress</span>
+          </div>
+          <p class="cert-description">
+            Certified Penetration Testing Specialist - Comprehensive hands-on penetration testing certification covering the entire penetration testing process from information gathering to reporting.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Pentesting</span>
+            <span class="skill-tag">Active Directory</span>
+            <span class="skill-tag">Web Apps</span>
+            <span class="skill-tag">Privilege Escalation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OSCP - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">OSCP</h3>
+              <span class="cert-org">Offensive Security</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Offensive Security Certified Professional - Advanced penetration testing certification focusing on practical exploitation techniques and report writing.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Pentesting</span>
+            <span class="skill-tag">Exploitation</span>
+            <span class="skill-tag">Buffer Overflow</span>
+            <span class="skill-tag">Web Apps</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CCNA - Failed -->
+      <div class="timeline-item">
+        <div class="timeline-marker failed"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">CCNA</h3>
+              <span class="cert-org">Cisco</span>
+            </div>
+            <span class="cert-badge failed">Failed</span>
+          </div>
+          <p class="cert-description">
+            Cisco Certified Network Associate - Foundation certification covering network fundamentals, network access, IP connectivity, IP services, security fundamentals, and automation.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Routing</span>
+            <span class="skill-tag">Switching</span>
+            <span class="skill-tag">Network Security</span>
+            <span class="skill-tag">Troubleshooting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security+ - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">Security+</h3>
+              <span class="cert-org">CompTIA</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Foundation-level security certification covering network security, compliance, operational security, threats and vulnerabilities.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Network Security</span>
+            <span class="skill-tag">Risk Management</span>
+            <span class="skill-tag">Cryptography</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AWS Solutions Architect - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">AWS Solutions Architect Associate</h3>
+              <span class="cert-org">Amazon Web Services</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Cloud architecture certification demonstrating expertise in designing distributed systems on AWS platform with focus on security and scalability.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">AWS</span>
+            <span class="skill-tag">Cloud Architecture</span>
+            <span class="skill-tag">IAM</span>
+            <span class="skill-tag">EC2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CEH - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">CEH v12</h3>
+              <span class="cert-org">EC-Council</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Certified Ethical Hacker - Comprehensive ethical hacking and penetration testing methodology covering the latest attack vectors and defensive techniques.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Ethical Hacking</span>
+            <span class="skill-tag">Scanning</span>
+            <span class="skill-tag">Social Engineering</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Network+ - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">Network+</h3>
+              <span class="cert-org">CompTIA</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Networking fundamentals certification covering network infrastructure, operations, security, and troubleshooting.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">TCP/IP</span>
+            <span class="skill-tag">Routing</span>
+            <span class="skill-tag">VLANs</span>
+            <span class="skill-tag">VPNs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Python for Cybersecurity - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">Python for Cybersecurity Specialization</h3>
+              <span class="cert-org">Coursera</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Specialized training in using Python for security automation, malware analysis, and developing security tools.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Automation</span>
+            <span class="skill-tag">Scripting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CISSP - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">CISSP</h3>
+              <span class="cert-org">(ISC)²</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Certified Information Systems Security Professional - Advanced security certification demonstrating expertise in security program design and management.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Security Management</span>
+            <span class="skill-tag">Risk Assessment</span>
+            <span class="skill-tag">Architecture</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Azure Security - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">Azure Security Engineer Associate</h3>
+              <span class="cert-org">Microsoft</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Microsoft Azure security certification focusing on identity management, platform protection, and security operations in Azure.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">Azure</span>
+            <span class="skill-tag">Cloud Security</span>
+            <span class="skill-tag">Identity</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GIAC - Planned -->
+      <div class="timeline-item">
+        <div class="timeline-marker planned"></div>
+        <div class="timeline-content">
+          <div class="cert-header">
+            <div>
+              <h3 class="cert-title">GIAC Security Essentials (GSEC)</h3>
+              <span class="cert-org">GIAC</span>
+            </div>
+            <span class="cert-badge planned">Planned</span>
+          </div>
+          <p class="cert-description">
+            Advanced security certification validating hands-on technical skills in IT security tasks including access control, cryptography, and network security.
+          </p>
+          <div class="cert-skills">
+            <span class="skill-tag">SANS Training</span>
+            <span class="skill-tag">Defense</span>
+            <span class="skill-tag">Incident Response</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
